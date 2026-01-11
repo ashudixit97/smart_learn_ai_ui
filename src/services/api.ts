@@ -4,10 +4,9 @@ import type {
   ValidationErrorResponse
 } from '../types/itinerary'
 
-// Use proxy in development, direct URL in production
-const API_BASE_URL = import.meta.env.DEV
-  ? '/api'
-  : 'https://smartlearnai-production-fb34.up.railway.app'
+// Use environment variable if set, otherwise use proxy path
+// The proxy path '/api' works with Vite dev server proxy and reverse proxies in production
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 /**
  * Custom API Error class
@@ -84,7 +83,7 @@ export const fetchItinerary = async (
       if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
         console.error('Network/CORS Error:', error)
         throw new ItineraryApiError(
-          'Network error: Unable to connect to the API server. This may be a CORS issue. Please check the browser console for more details. API: https://smartlearnai-production-fb34.up.railway.app/v1/itinerary'
+          `Network error: Unable to connect to the API server. This may be a CORS issue. Please check the browser console for more details. API: ${API_BASE_URL}/v1/itinerary`
         )
       }
     }
