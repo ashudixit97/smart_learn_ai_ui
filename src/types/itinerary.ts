@@ -1,6 +1,6 @@
 // API Request Types
 export type Level = 'beginner' | 'intermediate' | 'advanced'
-export type PreferFormat = 'mix' | 'video' | 'blog' | 'document'
+export type PreferFormat = "videos" | "blogs" | "mix"
 
 export interface ItineraryRequest {
   concept: string
