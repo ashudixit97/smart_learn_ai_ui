@@ -4,7 +4,10 @@ import type {
   ValidationErrorResponse
 } from '../types/itinerary'
 
-const API_BASE_URL = 'http://127.0.0.1:8000/v1'
+// Use proxy in development, direct URL in production
+const API_BASE_URL = import.meta.env.DEV
+  ? '/api'
+  : 'https://smartlearnai-production-fb34.up.railway.app'
 
 /**
  * Custom API Error class
@@ -43,7 +46,7 @@ export const fetchItinerary = async (
   request: ItineraryRequest
 ): Promise<ItineraryResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/itinerary`, {
+    const response = await fetch(`${API_BASE_URL}/v1/itinerary`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
@@ -74,11 +77,16 @@ export const fetchItinerary = async (
 
     return data as ItineraryResponse
   } catch (error) {
-    // Handle network errors
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new ItineraryApiError(
-        'Network error: Unable to connect to the API server. Please ensure the server is running on http://127.0.0.1:8000'
-      )
+    // Handle network errors (including CORS errors)
+    if (error instanceof TypeError) {
+      // CORS errors typically show as "Failed to fetch" or similar
+      const errorMessage = error.message.toLowerCase()
+      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        console.error('Network/CORS Error:', error)
+        throw new ItineraryApiError(
+          'Network error: Unable to connect to the API server. This may be a CORS issue. Please check the browser console for more details. API: https://smartlearnai-production-fb34.up.railway.app/v1/itinerary'
+        )
+      }
     }
 
     // Re-throw ItineraryApiError instances
@@ -87,6 +95,7 @@ export const fetchItinerary = async (
     }
 
     // Handle unknown errors
+    console.error('Unknown error:', error)
     throw new ItineraryApiError(
       error instanceof Error ? error.message : 'An unknown error occurred'
     )

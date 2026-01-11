@@ -116,9 +116,8 @@ export default function ItineraryForm({ onSubmit, isLoading }: ItineraryFormProp
             className="form-select"
           >
             <option value="mix">Mix</option>
-            <option value="video">Video</option>
-            <option value="blog">Blog</option>
-            <option value="document">Document</option>
+            <option value="videos">Videos</option>
+            <option value="blogs">Blogs</option>
           </select>
         </div>
       </div>
